@@ -8,7 +8,7 @@ const protect = (req, res, next) => {
         
         if (!authorization) {
             res.status(400);
-            throw new Error("No token detected");
+            throw new Error("You are not signed in");
         }
 
         if (!authorization.startsWith("Bearer")) {
@@ -26,6 +26,7 @@ const protect = (req, res, next) => {
         const decodedToken = jwt.decode(token);
 
         req.id = decodedToken.id;
+        
         next();
 
 

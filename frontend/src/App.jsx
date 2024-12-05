@@ -1,6 +1,6 @@
 import NavBar from './components/NavBar'
 import { Routes, Route } from 'react-router-dom'
-import { Home, Register, Jobs, Login, ProtectRoute, CandidateDashboard, RecruiterDashboard, CandidateProtectedRoutes, RecruiterProtectedRoutes, NewJob, EditJob, DisplayApplicants } from "./pages";
+import { Home, Register, Jobs, Login, ProtectRoute, CandidateDashboard, RecruiterDashboard, CandidateProtectedRoutes, RecruiterProtectedRoutes, NewJob, EditJob, DisplayApplicants, Detail } from "./pages";
 import {ToastContainer} from "react-toastify";
 
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,6 +15,7 @@ function App() {
         <Route path='/register' element={<Register />} />
         <Route path='/login' element={<Login />} />
         <Route path='/jobs' element={<Jobs />} />
+        <Route path='/detail/:jobId' element={<Detail />} />
         <Route element={<ProtectRoute />}>
 
             <Route element={<CandidateProtectedRoutes />} >

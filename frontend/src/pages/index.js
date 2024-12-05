@@ -10,7 +10,7 @@ import RecruiterProtectedRoutes from "./RecruiterProtectedRoutes";
 import NewJob from "./NewJob";
 import EditJob from "./EditJob";
 import DisplayApplicants from "./DisplayApplicants";
-
+import Detail from "./Detail";
 
 export  {
      Home,
@@ -24,5 +24,6 @@ export  {
      RecruiterProtectedRoutes,
      NewJob,
      EditJob,
-     DisplayApplicants
+     DisplayApplicants,
+     Detail
 }

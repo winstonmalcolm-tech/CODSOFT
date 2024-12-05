@@ -5,7 +5,17 @@ const apply = async (req, res, next) => {
         const jobId = req.params.jobId;
         const { applicantId } = req.body;
 
-        const sql = "INSERT INTO job_application_tbl job_id, applicant_id VALUES (?,?);";
+        let sql = "SELECT resume_url FROM applicant_tbl WHERE applicant_id = ? LIMIT 1";
+
+        const [rows] = await mysql.query(sql, [applicantId]);   
+
+        const applicant = rows[0];
+
+        if (!applicant.resume_url || applicant.resume_url == "") {
+            throw new Error("Go to profile and upload a resume");
+        }
+        
+        sql = "INSERT INTO job_application_tbl (job_id, applicant_id) VALUES (?,?);";
 
         await mysql.query(sql, [jobId, applicantId]);
 
@@ -25,14 +35,17 @@ const applied = async (req, res, next) => {
 
         const [rows] = await mysql.query(sql, [jobId, applicantId]);
 
-        const isApplied = (rows > 0) ? true : false;
+        const isApplied = (rows.length > 0) ? true : false;
 
         res.status(200).json({applied: isApplied});
 
     } catch(error) {
+        console.log(error)
         next(error.message);
     }
 }
+
+
 
 const recruiterjobs = async (req, res, next) => {
 
@@ -106,7 +119,7 @@ const jobsAppliedFor = async (req, res, next) => {
     try {
         const applicantId = req.params.applicantId;
 
-        let sql = "SELECT a.application_id, j.* FROM job_application_tbl AS a, job_tbl AS j WHERE j.job_id = a.job_id AND a.applicant_id = ?";
+        let sql = "SELECT a.application_id, r.company_name, j.* FROM job_application_tbl AS a, recruiter_tbl as r, job_tbl AS j WHERE r.recruiter_id = j.recruiter_id AND j.job_id = a.job_id AND a.applicant_id = ?;";
 
         const [rows] = await mysql.query(sql, [applicantId]);
 
@@ -164,7 +177,7 @@ const getJob = async (req, res, next) => {
     try {
         const jobId = req.params.jobId;
 
-        const sql = "SELECT * FROM job_tbl WHERE job_id = ? LIMIT 1";
+        const sql = "SELECT job.*, r.company_name FROM job_tbl AS job, recruiter_tbl as r WHERE r.recruiter_id = job.recruiter_id AND job_id = ? LIMIT 1";
 
         const [rows] = await mysql.query(sql, [jobId]);
 
@@ -184,6 +197,7 @@ const listJobs = async (req, res, next) => {
         res.status(200).json({jobs: rows});
 
     } catch (error) {
+        console.log(error);
         next(error.message);
     }
 }
@@ -249,5 +263,5 @@ module.exports = {
     displayJobProspects,
     getJobProspectsCount,
     acceptApplicant,
-    rejectApplicant
+    rejectApplicant,
 }

@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 const useAxios = () => {
     const {data, setData, logout} = useContext(UserContext);
 
-    const token = `Bearer ${data.accessToken}`;
+    const token = `Bearer ${data?.accessToken}`;
 
     const axiosInstance = axios.create({
         baseURL: 'http://localhost:3000/',
@@ -15,6 +15,10 @@ const useAxios = () => {
     });
 
     axiosInstance.interceptors.request.use(async (req) => {
+
+        if (data == null) {
+            return req;
+        }
 
         const decodedToken = jwtDecode(data.accessToken);
 

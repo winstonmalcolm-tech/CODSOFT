@@ -1,30 +1,44 @@
 const router = require("express").Router();
 const { register, uploadResume, getApplicant } = require("../controllers/candidate_controller");
 const multer = require("multer");
-
+const protect = require("../middlewares/auth_middleware");
+const fs = require("fs");
 
 const storage = multer.diskStorage({
-    destination: async function(req, file, cb) {
-        const id = req.body.applicantId;
+    destination: function(req, file, cb) {
+        const id = req.params.applicantId;
+        
+        const dir = `uploads/${id}`;
 
-        const directory = `uploads/${id}`;
+        if (fs.existsSync(dir)) {
+            fs.rmSync(dir, {recursive: true}, err => {
+                if (err) {
+                    throw err;
+                }
+            });
+            console.log("DELETE");
+        }
 
-        await fs.mkdir(directory, {recursive: true});
+        fs.mkdirSync(dir, {recursive: true}, err => {
+            if (err) {
+                throw err;
+            }
+        });
 
-        cb(null, directory);
+        cb(null, dir);
 
     },
     filename: function(req, file, cb) {
-        cb(null, file.originalname);
+        cb(null, file.originalname.replace(" ", ""));
     }
 });
 
 const upload = multer({storage});
 
 
-router.get("/:applicantId", getApplicant);
+router.get("/:applicantId", protect, getApplicant);
 router.post("/new", register);
 
-router.post("/resumeupload", upload.single("resume"), uploadResume);
+router.post("/resumeupload/:applicantId", protect, upload.single("resume"), uploadResume);
 
 module.exports = router;

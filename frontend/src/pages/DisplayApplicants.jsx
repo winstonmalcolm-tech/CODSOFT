@@ -27,9 +27,8 @@ const DisplayApplicants = () => {
                 email: applicant.email,
                 jobTitle: applicant.job_title
             });
-
             
-            setApplicants([applicant])
+            setApplicants(applicants.filter((a) => a.applicant_id !== applicant.applicant_id))
 
             toast.success(response.data.message);
 
@@ -49,9 +48,8 @@ const DisplayApplicants = () => {
                 jobTitle: applicant.job_title
             });
             
-
-            setApplicants(applicants.filter(a => a.applicant_id != applicant.applicant_id));
-            console.log(applicants);
+            
+            setApplicants(applicants.filter((a) => a.applicant_id !== applicant.applicant_id));
 
             toast.success(response.data.message);
 
@@ -68,7 +66,7 @@ const DisplayApplicants = () => {
             const response = await api.get(`/job/jobprospects/${recruiterId}`);
 
             setApplicants([...response.data.applicants])
-            console.log(response.data);
+
         } catch (error) {
             console.log(error);
         } finally {

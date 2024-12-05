@@ -1,6 +1,5 @@
 const mysql = require("../configs/db_config");
 const bcrypt = require("bcryptjs");
-const fs = require("fs/promises");
 
 const register = async (req, res, next) => {
 
@@ -34,7 +33,7 @@ const getApplicant = async (req, res, next) => {
     try {
         const applicantId = req.params.applicantId;
 
-        const sql = "SELECT * FROM applicant_tbl WHERE applicant_id = ? LIMT 1";
+        const sql = "SELECT * FROM applicant_tbl WHERE applicant_id = ? LIMIT 1";
 
         const [rows] = await mysql.query(sql, [applicantId]);
 
@@ -51,14 +50,14 @@ const uploadResume = async (req, res, next) => {
     try {
         const applicantId = req.params.applicantId;
         
-        const resume = req.files.resume[0];
+        const resume = req.file;
 
         if (!resume) {
             res.status(400);
             throw new Error("Please enter select a resume");
         }
 
-        const newResume = `${req.protocol}://${req.hostname}:${process.env.PORT}/${resume.path}`;
+        const newResume = `${req.protocol}://${req.hostname}:${process.env.PORT}/${resume.path.replace(" ", "")}`;
 
         let sql = "SELECT resume_url FROM applicant_tbl WHERE applicant_id = ?";
 
@@ -66,14 +65,15 @@ const uploadResume = async (req, res, next) => {
 
         const result = rows[0];
 
-        if (!result.resume_url) {
+        if (!result.resume_url || result.resume_url == "") {
+            
             sql = "UPDATE applicant_tbl SET resume_url = ? WHERE applicant_id = ?";
             await mysql.query(sql, [newResume, applicantId]);
 
             return res.status(200).json({message: "Resume uploaded"});
         }
 
-        await fs.unlink(result.resume_url);
+        //await fs.unlink(result.resume_url);
 
         sql = "UPDATE applicant_tbl SET resume_url = ? WHERE applicant_id = ?";
         await mysql.query(sql, [newResume, applicantId]);
@@ -81,7 +81,7 @@ const uploadResume = async (req, res, next) => {
         return res.status(200).json({message: "Resume uploaded"});
 
     } catch (error) {
-        next(error.message);
+        next(error.message);  
     }
 }
 

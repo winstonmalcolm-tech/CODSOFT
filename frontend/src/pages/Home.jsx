@@ -1,8 +1,32 @@
 import { Link } from "react-router-dom";
 import Work from "../assets/work.jpg";
 import JobCard from "../components/JobCard";
+import axios from 'axios';
+import { useState, useEffect, useContext } from "react";
+import { UserContext } from "../contexts/authContext";
+
 
 const Home = () => {
+    
+    const [featuredJobs, setFeaturedJobs] = useState([]);
+    const {data} = useContext(UserContext);
+    const getJobs = async () => {
+        try {
+
+            const response = await axios.get(`http://localhost:3000/job/listfeaturedjobs`);
+            
+            setFeaturedJobs(response.data.jobs);
+            
+        } catch (error) {
+            toast.error(error.response.data.error);
+        }
+
+    }
+
+    useEffect(() => {
+        getJobs();
+    }, []);
+
   return (
     <>
         <div className="flex max-md:flex-col w-full h-dvh items-center px-10 max-md:px-0">
@@ -27,28 +51,41 @@ const Home = () => {
             </div>
 
             <div className="flex max-md:flex-col gap-5 items-center justify-center flex-wrap">
-                <JobCard />
-                <JobCard />
-                <JobCard />
-                <JobCard />
+                {
+                    featuredJobs.map((job, i) => <JobCard key={i} job={job}/>)
+                }
             </div>
         </div>
 
         <div className="mt-20">
-            <div className="w-full flex mb-10">
-                <h1 className="text-gold capitalize text-5xl max-md:text-3xl">Get Started</h1>
-            </div>
+            
+            { !data &&
+                <div className="w-full flex mb-10">
+                    <h1 className="text-gold capitalize text-5xl max-md:text-3xl">Get Started</h1>
+                </div>
+            }
 
             <div className="w-full h-fit flex max-md:flex-col justify-evenly items-center gap-10">
-                <div className="flex-1 h-full flex flex-col justify-center items-center">
-                    <img src={Work} alt="img" className="object-contain"/>
-                    <Link to="/register" className="mt-10 px-10 py-4 bg-gradient-to-r from-gold to-orange rounded-3xl">Apply as Employer</Link>
-                </div>
+                {
+                    !data ? 
+                    (
+                        <>
+                            <div className="flex-1 h-full flex flex-col justify-center items-center">
+                                <img src={Work} alt="img" className="object-contain"/>
+                                <Link to="/register" className="mt-10 px-10 py-4 bg-gradient-to-r from-gold to-orange rounded-3xl">Apply as Employer</Link>
+                            </div>
 
-                <div className="flex-1 h-full flex flex-col justify-center items-center">
-                    <img src={Work} alt="img" className="object-contain"/>                    
-                    <Link to="/register" className="mt-10 px-10 py-4 bg-gradient-to-r from-gold to-orange rounded-3xl">Apply as Job Seeker</Link>                
-                </div>
+                            <div className="flex-1 h-full flex flex-col justify-center items-center">
+                                <img src={Work} alt="img" className="object-contain"/>                    
+                                <Link to={"/register"} className="mt-10 px-10 py-4 bg-gradient-to-r from-gold to-orange rounded-3xl">Apply as Job Seeker</Link>             
+                            </div>
+                        </>
+                    ) :
+
+                    <center className="mt-20">
+                        <Link to={(data.userType == "Recruiter") ? "/recruiter" : "/candidate"} className="mt-10 px-10 py-4 bg-gradient-to-r from-gold to-orange rounded-3xl">Go to Dashboard</Link>
+                    </center>
+                }
                 
             </div>
         </div>
