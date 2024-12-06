@@ -1,4 +1,5 @@
 const mysql = require("../configs/db_config");
+const mail = require("../configs/email_config");
 
 const apply = async (req, res, next) => {
     try {
@@ -82,7 +83,7 @@ const displayJobProspects = async (req, res, next) => {
     try {
         const recruiterId = req.params.recruiterId;
 
-        const sql = 'SELECT application.applicant_id, application.job_id, job.recruiter_id, job.job_title, applicant.first_name, applicant.last_name, applicant.location, applicant.date_of_birth, applicant.resume_url, applicant.email FROM job_application_tbl as application JOIN job_tbl AS job, applicant_tbl AS applicant WHERE applicant.applicant_id = application.applicant_id AND job.job_id = application.job_id AND job.recruiter_id = ?;';
+        const sql = 'SELECT application.application_id, application.applicant_id, application.job_id, job.recruiter_id, job.job_title, applicant.first_name, applicant.last_name, applicant.location, applicant.date_of_birth, applicant.resume_url, applicant.email FROM job_application_tbl as application JOIN job_tbl AS job, applicant_tbl AS applicant WHERE applicant.applicant_id = application.applicant_id AND job.job_id = application.job_id AND job.recruiter_id = ?;';
 
         const [rows] = await mysql.query(sql, [recruiterId]); 
 
@@ -95,7 +96,22 @@ const displayJobProspects = async (req, res, next) => {
 
 const acceptApplicant = async (req, res, next) => {
     try {
-        const {jobTitle, companyName, firstName, lastName, email} = req.body;
+        const {jobTitle, firstName, lastName, email, recruiterId, applicationId} = req.body;
+
+        let sql = "SELECT company_name FROM recruiter_tbl WHERE recruiter_id = ?";
+        const [rows] = await mysql.query(sql, [recruiterId]);
+
+        const mailOptions = {
+            from: 'careerexpose@gmail.com',
+            to: email,
+            subject: `Job Acceptance at ${rows[0].company_name} for ${firstName} ${lastName}`,
+            text: `Congratulations, you have been accepted for the role ${jobTitle} at ${rows[0].company_name}. You will be contacted by the employer for more information`
+          };
+
+        await mail.sendMail(mailOptions);
+
+        sql = "DELETE FROM job_application_tbl WHERE application_id = ?";
+        await mysql.query(sql, [applicationId]);
 
         res.status(200).json({message: "Email Sent"})
     } catch (error) {
@@ -105,7 +121,22 @@ const acceptApplicant = async (req, res, next) => {
 
 const rejectApplicant = async (req, res, next) => {
     try {
-        const {jobTitle, companyName, firstName, lastName, email} = req.body;
+        const {jobTitle, firstName, lastName, email, recruiterId, applicationId} = req.body;
+
+        const sql = "SELECT company_name FROM recruiter_tbl WHERE recruiter_id = ?";
+        const [rows] = await mysql.query(sql, [recruiterId]);
+
+        const mailOptions = {
+            from: 'careerexpose@gmail.com',
+            to: email,
+            subject: `Job Rejection from ${rows[0].company_name} for ${firstName} ${lastName}`,
+            text: `We regret inform you that you were not selected for the role ${jobTitle} at ${rows[0].company_name}.`
+          };
+
+        await mail.sendMail(mailOptions)
+
+        sql = "DELETE FROM job_application_tbl WHERE application_id = ?";
+        await mysql.query(sql, [applicationId]);
 
         res.status(200).json({message: "Email Sent"})
     } catch (error) {

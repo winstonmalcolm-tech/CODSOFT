@@ -126,7 +126,7 @@ const NewJob = () => {
                 </div>
 
                 <center>
-                    <button type="submit" className='w-40 bg-gradient-to-r from-gold to-orange p-4 rounded-xl' disabled={loading ? true : false}>{loading ? "Loading..." : "Sign up"}</button>
+                    <button type="submit" className='w-40 bg-gradient-to-r from-gold to-orange p-4 rounded-xl' disabled={loading ? true : false}>{loading ? "Loading..." : "Post"}</button>
                 </center>
 
             </form>

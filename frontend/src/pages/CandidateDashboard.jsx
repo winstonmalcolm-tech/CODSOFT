@@ -21,7 +21,7 @@ const CandidateDashboard = () => {
   const submitResumeHandler = async () => {
     try {
 
-      if (!resume) {
+      if (!fileSelected) {
         toast.error("Select a file first");
         return;
       }

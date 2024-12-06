@@ -17,15 +17,16 @@ const DisplayApplicants = () => {
     const recruiterId = jwtDecode(data.accessToken).id;
 
     const acceptHandler = async (applicant) => {
-
+        
         try {
 
             const response = await api.post("/job/accept", {
                 firstName: applicant.first_name,
                 lastName: applicant.last_name,
-                companyName: applicant.company_name,
                 email: applicant.email,
-                jobTitle: applicant.job_title
+                jobTitle: applicant.job_title,
+                recruiterId: recruiterId,
+                applicationId: applicant.applicant_id
             });
             
             setApplicants(applicants.filter((a) => a.applicant_id !== applicant.applicant_id))
@@ -43,9 +44,10 @@ const DisplayApplicants = () => {
             const response = await api.post("/job/reject", {
                 firstName: applicant.first_name,
                 lastName: applicant.last_name,
-                companyName: applicant.company_name,
                 email: applicant.email,
-                jobTitle: applicant.job_title
+                jobTitle: applicant.job_title,
+                recruiterId: recruiterId,
+                applicationId: applicant.application_id
             });
             
             
