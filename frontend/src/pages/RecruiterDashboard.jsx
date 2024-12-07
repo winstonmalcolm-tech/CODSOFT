@@ -178,9 +178,12 @@ const RecruiterDashboard = () => {
 
       <div className='w-4/5 m-auto h-80'>
         <div className="mt-10 h-full">
+          {
+            jobs.length == 1 ? <center><RecruiterJobCard job={jobs[0]}/></center>  :
           <Slider {...settings}>
             {jobs.map((job, i) => <RecruiterJobCard job={job} key={i}/>)}
           </Slider>
+          }
         </div>
       </div>
       <Link to={"/recruiter/newjob"} className=' w-72 text-center text-xl p-4 rounded-2xl bg-gradient-to-r from-gold to-orange m-auto'>Post Job +</Link>

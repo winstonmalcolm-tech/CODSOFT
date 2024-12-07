@@ -104,7 +104,7 @@ const DisplayApplicants = () => {
                         <h3 className='text-gray-500'>Applied for the role {applicant.job_title}</h3>
                     </div>
                     <div className='flex flex-col gap-5'>
-                        <button>Resume</button>
+                        <a href={applicant.resume_url}>Resume</a>
                         <button className='text-green-500' onClick={() => acceptHandler(applicant)}>Accept</button>
                         <button className='text-red-500' onClick={() => rejectHandler(applicant)}>Reject</button>
                     </div>

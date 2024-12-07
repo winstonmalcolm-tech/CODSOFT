@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         const id = req.params.applicantId;
         
-        const dir = `uploads/${id}`;
+        const dir = `upload/${id}`;
 
         if (fs.existsSync(dir)) {
             fs.rmSync(dir, {recursive: true}, err => {
@@ -16,7 +16,6 @@ const storage = multer.diskStorage({
                     throw err;
                 }
             });
-            console.log("DELETE");
         }
 
         fs.mkdirSync(dir, {recursive: true}, err => {
