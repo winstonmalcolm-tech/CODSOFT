@@ -109,9 +109,10 @@ const acceptApplicant = async (req, res, next) => {
           };
 
         await mail.sendMail(mailOptions);
-
+        
         sql = "DELETE FROM job_application_tbl WHERE application_id = ?";
         await mysql.query(sql, [applicationId]);
+        
 
         res.status(200).json({message: "Email Sent"})
     } catch (error) {

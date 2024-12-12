@@ -26,7 +26,7 @@ const DisplayApplicants = () => {
                 email: applicant.email,
                 jobTitle: applicant.job_title,
                 recruiterId: recruiterId,
-                applicationId: applicant.applicant_id
+                applicationId: applicant.application_id
             });
             
             setApplicants(applicants.filter((a) => a.applicant_id !== applicant.applicant_id))
