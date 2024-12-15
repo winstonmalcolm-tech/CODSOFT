@@ -1,9 +1,10 @@
-LEVEL 2 TASK 2 Task 
+# LEVEL 2 TASK 2 Task 
 
 Build a job board website where employers can post job openings and job seekers can
 search and apply for jobs. Use React, Node.js, and a database like MongoDB or PostgreSQL
 
-Home Page: Welcome message and featured job listings.
+## Home Page: 
+Welcome message and featured job listings.
 Job Listings Page: List of job openings with essential details.
 Job Detail Page: Detailed information about a specific job.
 Employer Dashboard: Account management and job posting.
